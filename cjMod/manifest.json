@@ -1,0 +1,15 @@
+{
+	"id": "cjmod",
+	"name": "CJ Mod",
+	"display_name": "CJ Mod",
+	"author": ["cyberjoke"],
+	"description": "An unbalanced mess of the cyberjoke's stupidity corp and friends",
+	"prefix": "CJMod",
+	"main_file": "main.lua",
+	"priority": 0,
+	"badge_colour": "2b2b2b",
+	"badge_text_colour": "fc4955",
+	"version": "1.6",
+	"dependencies": [
+	]
+}
