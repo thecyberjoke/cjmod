@@ -890,6 +890,7 @@ SMODS.Joker {
             local eval = function() return G.GAME.current_round.discards_used == 0 and not G.RESET_JIGGLES end
             juice_card_until(card, eval, true)
         elseif context.pre_discard and not context.blueprint and G.GAME.current_round.discards_used <= 0 then
+            local count = 0
             for n, x in pairs(context.full_hand) do
                 if x:get_seal(true) ~= "CJMod_venom" then
                     card.ability.chips = card.ability.chips + card.ability.increase
@@ -903,6 +904,7 @@ SMODS.Joker {
                             return true
                         end
                     }))
+                    count = count + 1
                     delay(0.5)
                     G.E_MANAGER:add_event(Event({
                         trigger = 'after',
@@ -914,7 +916,9 @@ SMODS.Joker {
                     }))
                 end
             end
-            return { message = "Upgraded!", message_colour = G.C.green }
+            if count > 0 then
+                return { message = "Upgraded!", message_colour = G.C.green }
+            end
         elseif context.individual and context.cardarea == G.play then
             if context.other_card:get_seal(false) == "CJMod_venom" then
                 return { chips = card.ability.chips }
@@ -1243,7 +1247,7 @@ SMODS.Joker {
     calculate = function(self, card, context)
         if context.before then
             card.ability.extra.first = true
-        elseif context.individual and context.other_card and card.ability.extra.first then
+        elseif context.individual and context.other_card and card.ability.extra.first and context.cardarea == G.play then
             local crd = context.other_card
             if crd and not crd:get_seal(true) then
                 card.ability.extra.first = false
@@ -2449,7 +2453,12 @@ SMODS.Joker {
     calculate = function(self, card, context)
         if context.end_of_round and context.beat_boss and context.cardarea == G.jokers then
             if G.GAME.dollars > card.ability.extra.cost + G.GAME.bankrupt_at and #G.jokers.cards < G.jokers.config.card_limit then
-                local newcard = SMODS.add_card({ key = pseudorandom_element(food_jokers, "LetHimCook"), edition = "e_negative" })
+                local newcard = SMODS.create_card({
+                set = "food",
+                area = context.area,
+                key_append = "CJMod_stereotype",
+                edition = "e_negative"
+                })
                 newcard.ability.extra_value = -(newcard.sell_cost + 3)
                 newcard:set_cost()
                 return { dollars = -card.ability.extra.cost }

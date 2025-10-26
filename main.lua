@@ -62,8 +62,8 @@ SMODS.Atlas({
 SMODS.Atlas({
 	key = "Tags",
 	path = "Tags.png",
-	px = 32,
-	py = 32,
+	px = 34,
+	py = 34,
 })
 
 SMODS.Sound({
@@ -108,6 +108,26 @@ SMODS.ObjectType({
     key = "CJModChess",
     default = "j_CJMod_pawnjoker",
     cards = {},
+    inject = function(self)
+        SMODS.ObjectType.inject(self)
+    end,
+})
+
+SMODS.ObjectType({
+    key = "food",
+    default = "j_ice_cream",
+    cards = {
+        "j_gros_michel",
+        "j_cavendish",
+        "j_popcorn",
+        "j_ice_cream",
+        "j_ramen",
+        "j_diet_cola",
+        "j_turtle_bean",
+        "j_egg",
+        "j_CJMod_macaron",
+        "j_CJMod_wafflejoker"
+    },
     inject = function(self)
         SMODS.ObjectType.inject(self)
     end,

@@ -81,3 +81,40 @@ SMODS.Tag {
         end
     end
 }
+
+SMODS.Tag {
+    key = "stereotype",
+    min_ante = 2,
+    atlas = "Tags",
+    pos = { x = 0, y = 2 },
+    config = { pool = "food" },
+    loc_vars = function(self, info_queue, tag)
+        return { vars = { } }
+    end,
+    loc_txt = {
+        name = "Stereotype",
+        text = {
+            "Next shop has a ",
+            "free Food Joker",
+        }
+    },
+    apply = function(self, tag, context)
+        if context.type == 'store_joker_create' then
+            local card = SMODS.create_card {
+                set = "food",
+                area = context.area,
+                key_append = "CJMod_stereotype"
+            }
+            create_shop_card_ui(card, 'Joker', context.area)
+            card.states.visible = false
+            tag:yep('+', G.C.RED, function()
+                card:start_materialize()
+                card.ability.couponed = true
+                card:set_cost()
+                return true
+            end)
+            tag.triggered = true
+            return card
+        end
+    end
+}
