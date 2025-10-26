@@ -118,7 +118,7 @@ SMODS.Blind{
                     blind.triggered = true
                     for n, x in pairs(playedhand) do
                         G.E_MANAGER:add_event(Event({trigger = "after", delay = 0.3, func = function()
-                            x:start_dissolve()
+                            SMODS.destroy_cards(x, false, false)
                             blind:wiggle()
                             return true end
                         }))
