@@ -2456,7 +2456,7 @@ SMODS.Joker {
     calculate = function(self, card, context)
         if context.end_of_round and context.beat_boss and context.cardarea == G.jokers then
             if G.GAME.dollars > card.ability.extra.cost + G.GAME.bankrupt_at and #G.jokers.cards < G.jokers.config.card_limit then
-                local newcard = SMODS.create_card({
+                local newcard = SMODS.add_card({
                 set = "food",
                 area = context.area,
                 key_append = "CJMod_stereotype",
