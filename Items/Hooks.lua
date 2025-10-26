@@ -53,6 +53,7 @@ function SMODS.calculate_context(context, return_table)
     return ret
 end
 
+-- rewritten to prevent selling a joker if it would bankrupt you
 function SMODS.is_eternal(card, trigger)
     local calc_return = {}
     local ovr_compat = false
@@ -61,7 +62,7 @@ function SMODS.is_eternal(card, trigger)
     SMODS.calculate_context({check_eternal = true, other_card = card, trigger = trigger, no_blueprint = true,}, calc_return)
     for _,eff in pairs(calc_return) do
         for _,tab in pairs(eff) do
-            if tab.no_destroy then --Reuses key from context.joker_type_destroyed
+            if tab.no_destroy then
                 ret = true
                 if type(tab.no_destroy) == 'table' then
                     if tab.no_destroy.override_compat then ovr_compat = true end
@@ -71,10 +72,16 @@ function SMODS.is_eternal(card, trigger)
     end
     if card.ability.eternal then ret = true end
     if not card.config.center.eternal_compat and not ovr_compat then ret = false end
-    if card.sell_cost and -card.sell_cost + G.GAME.bankrupt_at > G.GAME.dollars then ret = true end
+    if card.sell_cost and -card.sell_cost + G.GAME.bankrupt_at > G.GAME.dollars then
+        ret = true
+        if card.sell_cost and card.sell_cost > 0 then
+            ret = false
+        end
+    end
     return ret
 end
 
+-- rewritten to work better
 function get_new_boss()
     G.GAME.perscribed_bosses = G.GAME.perscribed_bosses or {
     }
@@ -297,16 +304,6 @@ function Blind:get_type()
         typology = 'Boss'
     end
     return typology
-end
-
-local resethook = reset_blinds
-
-function reset_blinds()
-    local ret = resethook()
-
-    --[[]]
-
-    return ret
 end
 
 local uiboxhook = create_UIBox_blind_choice

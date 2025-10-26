@@ -72,6 +72,26 @@ SMODS.Sound({
     pitch = 1.1
 })
 
+SMODS.Sound{
+    key = "glitch1",
+    path = "glitch1.ogg"
+}
+
+SMODS.Sound{
+    key = "glitch2",
+    path = "glitch2.ogg"
+}
+
+SMODS.Sound{
+    key = "glitch3",
+    path = "glitch3.ogg"
+}
+
+SMODS.Sound{
+    key = "glitch4",
+    path = "glitch4.ogg"
+}
+
 local mod_path = "" .. SMODS.current_mod.path
 CJMod.path = mod_path
 
@@ -117,18 +137,15 @@ SMODS.ObjectType({
     key = "food",
     default = "j_ice_cream",
     cards = {
-        "j_gros_michel",
-        "j_cavendish",
-        "j_popcorn",
-        "j_ice_cream",
-        "j_ramen",
-        "j_diet_cola",
-        "j_turtle_bean",
-        "j_egg",
-        "j_CJMod_macaron",
-        "j_CJMod_wafflejoker"
+        ["j_gros_michel"] = true,
+        ["j_cavendish"] = true,
+        ["j_popcorn"] = true,
+        ["j_ice_cream"] = true,
+        ["j_ramen"] = true,
+        ["j_diet_cola"] = true,
+        ["j_turtle_bean"] = true,
+        ["j_egg"] = true,
+        ["j_CJMod_macaron"] = true,
+        ["j_CJMod_wafflejoker"] = true
     },
-    inject = function(self)
-        SMODS.ObjectType.inject(self)
-    end,
 })

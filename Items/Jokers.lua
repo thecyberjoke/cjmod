@@ -1176,7 +1176,10 @@ SMODS.Joker {
     loc_vars = function(self, info_queue, card)
         return { vars = { card.ability.extra.money, card.ability.extra.sell } }
     end,
-
+    set_ability = function (self, card, initial, delay_sprites)
+        card.ability.couponed = true
+        card:set_cost()
+    end,
     add_to_deck = function(self, card)
         if card and not card.ability.extra.obtained then
             card.ability.extra.obtained = true
@@ -1958,7 +1961,7 @@ SMODS.Joker {
             local times = 0
             local jokers = G.jokers.cards
             for n, x in pairs(jokers) do
-                if x.config and x.config.center_key and find(food_jokers, x.config.center_key) or x.food then
+                if x.config and x.config.center_key and (x.config.center.pools or {}).food or x.food then
                     times = times + 1
                 end
             end
