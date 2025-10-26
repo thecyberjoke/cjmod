@@ -140,6 +140,84 @@ function get_new_boss()
     return boss
 end
 
+G.FUNCS.discard_cards_from_highlighted = function(e, hook)
+    stop_use()
+    G.CONTROLLER.interrupt.focus = true
+    G.CONTROLLER:save_cardarea_focus('hand')
+
+    for k, v in ipairs(G.playing_cards) do
+        v.ability.forced_selection = nil
+    end
+
+    if G.CONTROLLER.focused.target and G.CONTROLLER.focused.target.area == G.hand then G.card_area_focus_reset = {area = G.hand, rank = G.CONTROLLER.focused.target.rank} end
+    local highlighted_count = math.min(#G.hand.highlighted, G.discard.config.card_limit - #G.play.cards)
+    if highlighted_count > 0 then 
+        update_hand_text({immediate = true, nopulse = true, delay = 0}, {mult = 0, chips = 0, level = '', handname = ''})
+        table.sort(G.hand.highlighted, function(a,b) return a.T.x < b.T.x end)
+        inc_career_stat('c_cards_discarded', highlighted_count)
+        SMODS.calculate_context({pre_discard = true, full_hand = G.hand.highlighted, hook = hook})
+        
+        -- TARGET: pre_discard
+        local cards = {}
+        local destroyed_cards = {}
+        for i=1, highlighted_count do
+            G.hand.highlighted[i]:calculate_seal({discard = true})
+            local removed = false
+            local effects = {}
+            SMODS.calculate_context({discard = true, other_card =  G.hand.highlighted[i], full_hand = G.hand.highlighted, ignore_other_debuff = true}, effects)
+            SMODS.trigger_effects(effects)
+            for _, eval in pairs(effects) do
+                if type(eval) == 'table' then
+                    for key, eval2 in pairs(eval) do
+                        if key == 'remove' or (type(eval2) == 'table' and eval2.remove) then removed = true end
+                    end
+                end
+            end
+            table.insert(cards, G.hand.highlighted[i])
+            if removed then
+                destroyed_cards[#destroyed_cards + 1] = G.hand.highlighted[i]
+                if SMODS.shatters(G.hand.highlighted[i]) then
+                    G.hand.highlighted[i]:shatter()
+                else
+                    G.hand.highlighted[i]:start_dissolve()
+                end
+            else 
+                G.hand.highlighted[i].ability.discarded = true
+                if G.GAME.used_vouchers["v_CJMod_infinitus"] then
+                    draw_card(G.hand, G.deck, i*100/highlighted_count, 'down', false, G.hand.highlighted[i])
+                else
+                    draw_card(G.hand, G.discard, i*100/highlighted_count, 'down', false, G.hand.highlighted[i])
+                end
+            end
+        end
+
+        -- context.remove_playing_cards from discard
+        if destroyed_cards[1] then
+            SMODS.calculate_context({remove_playing_cards = true, removed = destroyed_cards})
+        end
+        
+        -- TARGET: effects after cards destroyed in discard
+
+        G.GAME.round_scores.cards_discarded.amt = G.GAME.round_scores.cards_discarded.amt + #cards
+        check_for_unlock({type = 'discard_custom', cards = cards})
+        if not hook then
+            if G.GAME.modifiers.discard_cost then
+                ease_dollars(-G.GAME.modifiers.discard_cost)
+            end
+            ease_discard(-1)
+            G.GAME.current_round.discards_used = G.GAME.current_round.discards_used + 1
+            G.STATE = G.STATES.DRAW_TO_HAND
+            G.E_MANAGER:add_event(Event({
+                trigger = 'immediate',
+                func = function()
+                    G.STATE_COMPLETE = false
+                    return true
+                end
+            }))
+        end
+    end
+end
+
 function end_round()
     G.E_MANAGER:add_event(Event({
         trigger = 'after',
@@ -330,4 +408,19 @@ function create_UIBox_blind_choice(type, run_info)
         
     end
     return t
+end
+
+G.FUNCS.draw_from_play_to_discard = function(e)
+    local play_count = #G.play.cards
+    local it = 1
+    for k, v in ipairs(G.play.cards) do
+        if (not v.shattered) and (not v.destroyed) then
+            if G.GAME.used_vouchers["v_CJMod_cardjutsu"] then
+                draw_card(G.play,G.deck, it*100/play_count,'down', false, v)
+            else
+                draw_card(G.play,G.discard, it*100/play_count,'down', false, v)
+            end
+            it = it + 1
+        end
+    end
 end

@@ -66,6 +66,13 @@ SMODS.Atlas({
 	py = 34,
 })
 
+SMODS.Atlas({
+	key = "Vouchers",
+	path = "Vouchers.png",
+	px = 71,
+	py = 95,
+})
+
 SMODS.Sound({
     key = "hiss",
     path = "hiss.ogg",
