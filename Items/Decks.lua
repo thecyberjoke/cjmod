@@ -159,7 +159,7 @@ SMODS.Back {
         name = "Daredevil Deck",
         text = {
             "{C:dark_edition}+1{} Joker Slot",
-            "Start with a {C:chips,T:tag_juggle}Juggle Tag{}",
+            "Start with a {C:chips,T:tag_juggle}Mini Tag{}",
             "{C:money}#1#${} Blind Payout",
             "{C:red,E:2,s:1.1}All Blinds are Boss Blinds{}"
         },
@@ -192,7 +192,7 @@ SMODS.Back {
         
         G.E_MANAGER:add_event(Event({
             func = function()
-                add_tag(Tag('tag_juggle'))
+                add_tag(Tag('tag_CJMod_minibuffoon'))
                 play_sound('generic1', 0.9 + math.random() * 0.1, 0.8)
                 play_sound('holo1', 1.2 + math.random() * 0.1, 0.4)
                 

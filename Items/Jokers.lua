@@ -549,8 +549,8 @@ SMODS.Joker {
         text = {
             "If the current score (not total)",
             "is more than the blind's required score,",
-            "get {C:attention}5${} * Overkill Percentage.",
-            "{C:inactive}(Maximum {C:attention}#3#${}.){}"
+            "get {C:money}5${} * Overkill Percentage.",
+            "{C:inactive}(Maximum {C:money}#3#${}.){}"
         }
     },
     loc_vars = function(self, info_queue, card)
@@ -2137,7 +2137,7 @@ SMODS.Joker {
         return { vars = { card.ability.extra.chips } }
     end,
     calculate = function(self, card, context)
-        if context.post_trigger and context.other_card and context.cardarea == G.jokers then
+        if context.post_trigger and context.other_card and context.cardarea == G.jokers and (context.main_scoring or context.before or context.final_scoring_step) then
             if G.STATE ~= G.STATES.HAND_PLAYED then return end
             local joker = context.other_card
             local pos = find(G.jokers.cards, card)
@@ -2170,7 +2170,7 @@ SMODS.Joker {
         return { vars = { card.ability.extra.mult } }
     end,
     calculate = function(self, card, context)
-        if context.post_trigger and context.other_card and context.cardarea == G.jokers then
+        if context.post_trigger and context.other_card and context.cardarea == G.jokers and (context.main_scoring or context.before or context.final_scoring_step) then
             if G.STATE ~= G.STATES.HAND_PLAYED then return end
             local joker = context.other_card
             local pos = find(G.jokers.cards, card)
@@ -2245,8 +2245,6 @@ SMODS.Joker {
             "{C:mult}+#1#{} Mult and {C:chips}+#2#{} Chips",
             "Increases by {C:mult}+#3#{} and {C:chips}+#4#{} for",
             "each {C:planet}Planet{} used",
-            "{C:red}Decreases{} {C:purple,E:1}highest hand level{} by 1",
-            "at end of the blind",
             "{C:mult}-#3#{} and {C:chips}-#4#{} when",
             "playing most played hand",
             "{C:inactive}(Current most used: #5#){}"
@@ -2266,7 +2264,7 @@ SMODS.Joker {
             }
         elseif context.using_consumeable and context.consumeable then
             local consum = context.consumeable
-            if consum.ability and consum.ability.set then
+            if consum and consum.ability and consum.ability.set then
                 if consum.ability.set == "Planet" then
                     card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.multinc
                     card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chipsinc
@@ -2287,14 +2285,6 @@ SMODS.Joker {
                 if card.ability.extra.mult <= 0 then
                     SMODS.destroy_cards(card, true, true, true)
                     return { message = "Rotten!", message_colour = G.C.ORANGE }
-                else
-                    local tab = { message = "Downgraded!", message_colour = G.C.ORANGE }
-                    if context.scoring_name == G.GAME.current_round.most_played_poker_hand and G.GAME.hands[context.scoring_name].level > 1 and overscores() then
-                        if not context.check then
-                            tab.level_up = -1
-                        end
-                    end
-                    return tab
                 end
             end
         elseif context.end_of_round then

@@ -191,7 +191,6 @@ SMODS.Blind{
     calculate = function(self, blind, context)
         if not blind.disabled then
             if context.debuff_card and context.debuff_card.area == G.jokers then
-                print("!")
                 local joker = context.debuff_card
                 if not joker then return end
                 if joker.loc_txt and joker.loc_txt.name then
@@ -205,7 +204,6 @@ SMODS.Blind{
                     end
                 end
             elseif context.card_added and context.card and context.card.ability and context.card.ability.set == "Joker" then
-                print("!")
                 local joker = context.debuff_card
                 if not joker then return end
                 if joker.loc_txt and joker.loc_txt.name then
