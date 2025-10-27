@@ -237,7 +237,7 @@ SMODS.Tag {
     key = "art",
     min_ante = 1,
     atlas = "Tags",
-    pos = { x = 0, y = 3 },
+    pos = { x = 0, y = 4 },
     config = { mod_conv1 = "j_CJMod_pencil", mod_conv2 = "j_CJMod_canvas" },
     loc_vars = function(self, info_queue, tag)
         info_queue[#info_queue + 1] = G.P_CENTERS[tag.config.mod_conv1]
