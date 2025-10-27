@@ -167,7 +167,7 @@ SMODS.Joker {
 SMODS.Joker {
     key = "squishy",
     pos = { x = 0, y = 1 },
-    rarity = 1,
+    rarity = 2,
     atlas = "main",
     config = { extra = { size = 2, hasactivated = false } },
     cost = 6,
@@ -1122,7 +1122,7 @@ SMODS.Joker {
     atlas = "main",
     config = { mod_conv = 'Red', extra = { repeats = 2, otherrepeats = 1, size = 1 } },
 
-    cost = 5,
+    cost = 8,
     blueprint_compat = true,
     loc_txt = {
         name = "Deja Joker",
@@ -2457,11 +2457,12 @@ SMODS.Joker {
         if context.end_of_round and context.beat_boss and context.cardarea == G.jokers then
             if G.GAME.dollars > card.ability.extra.cost + G.GAME.bankrupt_at and #G.jokers.cards < G.jokers.config.card_limit then
                 local newcard = SMODS.add_card({
-                set = "food",
-                area = context.area,
-                key_append = "CJMod_stereotype",
-                edition = "e_negative"
+                    set = "food",
+                    area = context.area,
+                    key_append = "CJMod_stereotype",
+                    edition = "e_negative"
                 })
+                G.jokers:emplace(newcard)
                 newcard.ability.extra_value = -(newcard.sell_cost + 3)
                 newcard:set_cost()
                 return { dollars = -card.ability.extra.cost }

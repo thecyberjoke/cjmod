@@ -73,7 +73,7 @@ SMODS.Voucher{
   atlas = "Vouchers",
   pos = {x = 0, y = 0},
   loc_txt = {
-    name = "Card Jutsu",
+    name = "Paper Jutsu",
     text = {
       "{C:blue}Played{} cards may appear",
       "{C:attention}multiple times{} during rounds"

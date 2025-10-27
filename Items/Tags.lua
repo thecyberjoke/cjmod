@@ -232,3 +232,42 @@ SMODS.Tag {
         end
     end
 }
+
+SMODS.Tag {
+    key = "art",
+    min_ante = 1,
+    atlas = "Tags",
+    pos = { x = 0, y = 3 },
+    config = { mod_conv1 = "j_CJMod_pencil", mod_conv2 = "j_CJMod_canvas" },
+    loc_vars = function(self, info_queue, tag)
+        info_queue[#info_queue + 1] = G.P_CENTERS[tag.config.mod_conv1]
+        info_queue[#info_queue + 1] = G.P_CENTERS[tag.config.mod_conv2]
+        return { vars = { } }
+    end,
+    loc_txt = {
+        name = "Artistic Flow",
+        text = {
+            "Either get a",
+            "{C:dark_edition}Canvas{} or {C:dark_edition}Pencil{}",
+            "{C:inactive}(Won't get consumed until you{}",
+            "{C:inactive}have enough space){}"
+        }
+    },
+    apply = function(self, tag, context)
+        if context.type == "immediate" then
+            if G.jokers.config.card_limit > #G.jokers.cards then
+                local rndkey = pseudorandom_element({"j_CJMod_pencil", "j_CJMod_canvas"}, pseudoseed("SHITANDSTUFF"))
+                local card = SMODS.create_card{
+                    key = rndkey,
+                }
+                G.jokers:emplace(card)
+                card.states.visible = false
+                tag:yep('+', G.C.GREEN, function()
+                    card:start_materialize()
+                    return true
+                end)
+                return true
+            end
+        end
+    end
+}
