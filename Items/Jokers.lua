@@ -106,7 +106,7 @@ SMODS.Joker {
 SMODS.Joker {
     key = "cyberjoker",
     pos = { x = 3, y = 0 },
-    rarity = 4,
+    rarity = "CJMod_stupid",
     atlas = "main",
     blueprint_compat = false,
     config = { extra = { mult = 4 } },
@@ -309,7 +309,7 @@ SMODS.Joker {
 SMODS.Joker {
     key = "basedjoker",
     pos = { x = 3, y = 1 },
-    rarity = 4,
+    rarity = "CJMod_stupid",
     atlas = "main",
     config = { extra = { mult = 15, chips = 45 } },
     cost = 12,
@@ -355,7 +355,7 @@ SMODS.Joker {
 SMODS.Joker {
     key = "lerifejoker",
     pos = { x = 0, y = 2 },
-    rarity = 4,
+    rarity = "CJMod_stupid",
     atlas = "main",
     config = { mod_conv = 'm_wild' },
     cost = 12,
@@ -415,7 +415,7 @@ SMODS.Joker {
 SMODS.Joker {
     key = "wormjoker",
     pos = { x = 4, y = 1 },
-    rarity = 4,
+    rarity = "CJMod_stupid",
     atlas = "main",
     config = { extra = { jack = 8, king = 1.1, queen = 1, currentjack = 0, currentking = 0, currentqueen = 0 }, },
     cost = 12,
@@ -931,7 +931,7 @@ SMODS.Joker {
 SMODS.Joker {
     key = "ascapedjoker",
     pos = { x = 2, y = 4 },
-    rarity = 4,
+    rarity = "CJMod_stupid",
     atlas = "main",
     config = { extra = { max = 8 } },
 
@@ -2306,7 +2306,7 @@ SMODS.Joker {
     pos = { x = 2, y = 10 },
     rarity = 2,
     atlas = "main",
-    config = { extra = { xmult = 1.5, odds = 3 } },
+    config = { extra = { xmult = 1.75, odds = 3 } },
 
     cost = 7,
     blueprint_compat = true,
@@ -2316,7 +2316,8 @@ SMODS.Joker {
             "{X:mult,C:white}X#1#{} Mult",
             "{C:green}#2# in #3#{} chance to",
             "replace the {C:money}Big Blind{} with",
-            "a {C:red}Boss Blind{}"
+            "a {C:red}Boss Blind{} after",
+            "beating the current {C:red}ante{}"
         }
     },
     loc_vars = function(self, info_queue, card)
@@ -2659,28 +2660,81 @@ SMODS.Joker {
     pools = { ["CJModSet"] = true, ["CJModSetFull"] = true, }
 }
 
---[[SMODS.Joker {
-    key = "artjoker",
-    pos = { x = 1, y = 11 },
-    rarity = 2,
+SMODS.Joker {
+    key = "jokerjoker",
+    pos = { x = 0, y = 12 },
+    rarity = 1,
     atlas = "main",
     config = { extra = { cash = 3 } },
 
-    cost = 10,
+    cost = 5,
+    blueprint_compat = true,
+    loc_txt = {
+        name = "string",
+        text = {
+            "Get {C:money}$#1#{} at the",
+            "end of the round",
+            "for each Joker that you have",
+            'that has "Joker" in their name'
+        }
+    },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.cash } }
+    end,
+    calc_dollar_bonus = function(self, card)
+        local times = 0
+        for n, x in pairs(G.jokers.cards) do
+            if x.loc_txt and x.loc_txt.name then
+                if string.find(string.lower(x.loc_txt.name), "joker") then
+                    times = times + 1
+                end
+            else
+                local name = localize({ type = 'name_text', key = x.config.center_key, set = 'Joker' })
+                if name and type(name) == "string" and string.find(string.lower(name), "joker") then
+                    times = times + 1
+                end
+            end
+        end
+        return times * card.ability.extra.cash
+    end,
+    pools = { ["CJModSet"] = true, ["CJModSetFull"] = true, }
+}
+
+SMODS.Joker {
+    key = "artjoker",
+    pos = { x = 1, y = 12 },
+    rarity = 2,
+    atlas = "main",
+    config = { extra = { } },
+
+    cost = 8,
     blueprint_compat = false,
     loc_txt = {
         name = "Modern Art",
         text = {
-            ""
+            "When a Joker or consumeable is being {C:money}sold{} or",
+            "{C:red}destroyed{}, gain half of its {C:money}value{}"
         }
     },
     loc_vars = function(self, info_queue, card)
-        return { vars = { card.ability.extra.cost } }
+        return { vars = { } }
     end,
     calculate = function(self, card, context)
-        if context.end_of_round and context.beat_boss and context.cardarea == G.jokers then
-            
+        if context.destroy_card and (context.cardarea == G.jokers or context.cardarea == G.consumeables) then
+            local crd = context.destroy_card
+            if crd and crd.sell_cost and crd.sell_cost > 0 then
+                card.ability.extra_value = card.ability.extra_value + math.ceil(crd.sell_cost / 2)
+                card:set_cost()
+                return {message = "Value up!", message_colour = G.C.MONEY}
+            end
+        elseif context.selling_card and (context.cardarea == G.jokers or context.cardarea == G.consumeables) then
+            local crd = context.card
+            if crd and crd.sell_cost and crd.sell_cost > 0 then
+                card.ability.extra_value = card.ability.extra_value + math.ceil(crd.sell_cost / 2)
+                card:set_cost()
+                return {message = "Value up!", message_colour = G.C.MONEY}
+            end
         end
     end,
     pools = { ["CJModSet"] = true, ["CJModSetFull"] = true, }
-}]]
+}

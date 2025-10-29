@@ -287,3 +287,91 @@ SMODS.Back {
         end
     end,
 }
+
+SMODS.Back {
+    key = "gains",
+    atlas = "Decks",
+    pos = { x = 2, y = 1 },
+    unlocked = true,
+    discovered = true,
+    config = { },
+    loc_txt = {
+        name = "Gains n' Losses",
+        text = {
+            "Every card, voucher and booster you see will",
+            "have their values multiplied by",
+            "a random multiplier between",
+            "{X:mult,C:white}X0.5{} and {X:mult,C:white}X2.5{}",
+        },
+    },
+    loc_vars = function (self, info_queue, card)
+        return {vars = { }}
+    end,
+    calculate = function (self, back, context)
+        local function modify(t)
+            if t and type(t) == "table" then
+                for m, y in pairs(t) do
+                    if type(y) == "table" then
+                        modify(y)
+                    elseif type(y) == "number" then
+                        local modifier = pseudorandom(pseudoseed("ssdfg"), 50, 250)*0.01
+                        t[m] = y * modifier
+                    end
+                end
+            end
+        end
+        if context.starting_shop or context.reroll_shop then
+            for n, x in pairs(G.shop_jokers.cards) do
+                if x and x.ability then
+                    modify(x.ability)
+                    x.cost = math.max(0,x.cost * pseudorandom(pseudoseed("ssdfg"), 50, 250)*0.01)
+                    if x.seal and x.seal.ability then
+                        modify(x.seal.ability)
+                    end
+                    if x.edition and x.edition.ability then
+                        modify(x.edition.ability)
+                    end
+                    if x.ability.set == "Default" or x.ability.set == "Enhanced" then
+                        x.ability.bonus = (x.ability.bonus or 0) + (x:get_chip_bonus() * pseudorandom(pseudoseed("ssdfg"), 50, 250)*0.01) - x:get_chip_bonus()
+                    end
+                end
+            end
+            for n, x in pairs(G.shop_vouchers.cards) do
+                if x and x.ability then
+                    modify(x.ability)
+                    x.cost = math.max(0,x.cost * pseudorandom(pseudoseed("ssdfg"), 50, 250)*0.01)
+                end
+            end
+            for n, x in pairs(G.shop_booster.cards) do
+                if x and x.ability then
+                    modify(x.ability)
+                    x.cost = math.max(0,x.cost * pseudorandom(pseudoseed("ssdfg"), 50, 250)*0.01)
+                    if x.seal and x.seal.ability then
+                        modify(x.seal.ability)
+                    end
+                    if x.edition and x.edition.ability then
+                        modify(x.edition.ability)
+                    end
+                end
+                if x.nominal_chips then
+                   x.nominal_chips = math.max(0, x.nominal * pseudorandom(pseudoseed("ssdfg"), 50, 250)*0.01) 
+                end
+            end
+        elseif context.open_booster then
+            G.E_MANAGER:add_event(Event({
+                trigger = "immediate",
+                func = function()
+                    for n, x in pairs(G.pack_cards.cards) do
+                        if x and x.ability then
+                            modify(x.ability)
+                            if x.ability.set == "Default" or x.ability.set == "Enhanced" then
+                                x.ability.bonus = (x.ability.bonus or 0) + (x:get_chip_bonus() * pseudorandom(pseudoseed("ssdfg"), 50, 250)*0.01) - x:get_chip_bonus()
+                            end
+                        end
+                    end
+                    return true
+                end
+            }))
+        end
+    end,
+}
