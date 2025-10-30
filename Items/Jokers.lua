@@ -2215,7 +2215,7 @@ SMODS.Joker {
     calculate = function(self, card, context)
         if context.blind_defeated then
             if SMODS.pseudorandom_probability(card, "ThisShitGonnaDebuffLmao", 1, 10, "NFTRugPull") then
-                card.ability.extra_value = -(card.ability.extra_value + card.sell_cost)
+                card.ability.extra_value = -(card.sell_cost)
                 card:set_cost()
                 SMODS.debuff_card(card, true, "FailedNFT")
                 return {
