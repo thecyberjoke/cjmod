@@ -40,12 +40,15 @@ SMODS.Seal {
             end
             if not found then
                 card.ability.seal.extra.venomcount = card.ability.seal.extra.venomcount - 1
+                if card.ability.seal.extra.venomcount <= 0 then
+                    card.venombreak = true
+                end
                 return {xchips = card.ability.seal.extra.xchips, message = "Dissolving...", message_colour = G.C.GREEN}
             else
                 return {xchips = card.ability.seal.extra.xchips}
             end
         elseif context.destroying_card and context.destroying_card == card then
-            if card.ability.seal.extra.venomcount <= 0 then
+            if card.venombreak then
                 return {remove = true, message = "Dissolved!", message_colour = G.C.GREEN}
             end
         end

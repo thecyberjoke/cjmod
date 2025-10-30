@@ -2738,3 +2738,270 @@ SMODS.Joker {
     end,
     pools = { ["CJModSet"] = true, ["CJModSetFull"] = true, }
 }
+
+SMODS.Joker {
+    key = "yogurt",
+    pos = { x = 2, y = 12 },
+    rarity = 1,
+    atlas = "main",
+    config = { extra = { cchips = 75, cmult = 7.5, dchips = 15, dmult = 1.5, current = "chips" } },
+    cost = 4,
+    eternal_compat = false,
+    loc_txt = {
+        name = "Turkish Yogurt",
+        text = {
+            "{C:chips}+#1#{} Chips or",
+            "{C:mult}+#2#{} Mult",
+            "Decays by {C:chips}#3#{} or {C:mult}#4#{}",
+            "after every played hand",
+            "{C:inactive}(Does not go well with Greek food){}"
+        }
+    },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.cchips, card.ability.extra.cmult, card.ability.extra.dchips, card.ability.extra.dmult } }
+    end,
+    calculate = function(self, card, context)
+        if context.before and not context.blueprint_card then
+            local choice = pseudorandom(pseudoseed("yogurtchoice"), 1, 2)
+            if choice == 1 and card.ability.extra.cchips > 0 then
+                card.ability.extra.current = "chips"
+            elseif card.ability.extra.cmult > 0 then
+                card.ability.extra.current = "mult"
+            else
+                card.ability.extra.current = "chips"
+            end
+        elseif context.joker_main then
+            for n, x in pairs(G.jokers.cards) do
+                if x.config and x.config.center_key == "j_CJMod_yogurtcopy" and not x.debuffed then
+                    G.E_MANAGER:add_event(Event({
+                        trigger = "immediate",
+                        func = function()
+                            G.STATE = G.STATES.GAME_OVER
+                            G.STATE_COMPLETE = false
+                            return true
+                        end
+                        }))
+                    return {message = "Fuck you"}
+                end
+            end
+            if card.ability.extra.current == "chips" then
+                return {chips = card.ability.extra.cchips}
+            else
+                return {mult = card.ability.extra.cmult}
+            end
+        elseif context.after and not context.blueprint_card then
+            if card.ability.extra.current == "chips" then
+                card.ability.extra.cchips = card.ability.extra.cchips - card.ability.extra.dchips
+            else
+                card.ability.extra.cmult = card.ability.extra.cmult - card.ability.extra.dmult
+            end
+            if card.ability.extra.cmult <= 0 and card.ability.extra.cchips <= 0 then
+                SMODS.destroy_cards(card, nil, nil)
+                return {message = "Consumed!"}
+            else
+                if card.ability.extra.current == "chips" then
+                    return {message_colour = G.C.CHIPS, message = tostring(-card.ability.extra.dchips)}
+                else
+                    return {message_colour = G.C.MULT, message = tostring(-card.ability.extra.dmult)}
+                end
+            end
+        end
+    end,
+    pools = { ["CJModSet"] = true, ["CJModSetFull"] = true, ["food"] = true, }
+}
+
+SMODS.Joker {
+    key = "yogurtcopy",
+    pos = { x = 3, y = 12 },
+    rarity = 1,
+    atlas = "main",
+    config = { extra = { cchips = 1.5, cmult = 1.5, dchips = .1, dmult = .1, current = "chips" } },
+    cost = 4,
+    eternal_compat = false,
+    loc_txt = {
+        name = "Greek Yogurt",
+        text = {
+            "{X:chips,C:white}X#1#{} Chips or",
+            "{X:mult,C:white}X#2#{} Mult",
+            "Decays by {X:chips,C:white}X#3#{} or {X:mult,C:white}X#4#{}",
+            "after every played hand",
+            "{C:inactive}(Does not go well with Turkish food){}"
+        }
+    },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.cchips, card.ability.extra.cmult, card.ability.extra.dchips, card.ability.extra.dmult } }
+    end,
+    calculate = function(self, card, context)
+        if context.before and not context.blueprint_card then
+            local choice = pseudorandom(pseudoseed("yogurtchoice"), 1, 2)
+            if choice == 1 and card.ability.extra.cchips > 1 then
+                card.ability.extra.current = "chips"
+            elseif card.ability.extra.cmult > 1 then
+                card.ability.extra.current = "mult"
+            else
+                card.ability.extra.current = "chips"
+            end
+        elseif context.joker_main then
+            for n, x in pairs(G.jokers.cards) do
+                if x.config and x.config.center_key == "j_CJMod_yogurt" and not x.debuffed then
+                    G.E_MANAGER:add_event(Event({
+                        trigger = "immediate",
+                        func = function()
+                            G.STATE = G.STATES.GAME_OVER
+                            G.STATE_COMPLETE = false
+                            return true
+                        end
+                        }))
+                    return {message = "Fuck you"}
+                end
+            end
+            if card.ability.extra.current == "chips" then
+                return {xchips = card.ability.extra.cchips}
+            else
+                return {xmult = card.ability.extra.cmult}
+            end
+        elseif context.after and not context.blueprint_card then
+            if card.ability.extra.current == "chips" then
+                card.ability.extra.cchips = card.ability.extra.cchips - card.ability.extra.dchips
+            else
+                card.ability.extra.cmult = card.ability.extra.cmult - card.ability.extra.dmult
+            end
+            if card.ability.extra.cmult <= 1 and card.ability.extra.cchips <= 1 then
+                SMODS.destroy_cards(card, nil, nil)
+                return {message = "Consumed!"}
+            else
+                if card.ability.extra.current == "chips" then
+                    return {message_colour = G.C.CHIPS, message = tostring(-card.ability.extra.dchips)}
+                else
+                    return {message_colour = G.C.MULT, message = tostring(-card.ability.extra.dmult)}
+                end
+            end
+        end
+    end,
+    pools = { ["CJModSet"] = true, ["CJModSetFull"] = true, ["food"] = true, }
+}
+
+SMODS.Joker {
+    key = "heartbreak",
+    pos = { x = 4, y = 12 },
+    rarity = 2,
+    atlas = "main",
+    config = { extra = { deckmult = 1, playmult = 5, cards = 3 } },
+    cost = 8,
+    loc_txt = {
+        name = "Heartbreak",
+        text = {
+            "{C:mult}+#1#{} Mult for each",
+            "{C:red}debuffed{} card in your full deck",
+            "{C:inactive}(Currently {C:mult}#4#{C:inactive}){}",
+            "Get {C:mult}#2#{} Mult for each {C:red}debuffed",
+            "card in the scored hand"
+        }
+    },
+    loc_vars = function(self, info_queue, card)
+        local cards = 0
+        if G.deck and G.deck.cards then
+            for n, x in pairs(G.deck.cards) do
+                if x.debuffed then
+                    cards = cards + 1
+                end
+            end
+        end
+        return { vars = { card.ability.extra.deckmult, card.ability.extra.playmult, card.ability.extra.cards, cards } }
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            local times = 0
+            for n, x in pairs(G.play.cards) do
+                if SMODS.in_scoring(x, context.scoring_hand) and x.debuff then
+                    times = times + 1
+                end
+            end
+            if times > 0 then
+                return {mult = times * card.ability.extra.playmult}
+            end
+        elseif context.final_scoring_step then
+            local times = 0
+            for n, x in pairs(G.deck.cards) do
+                if x.debuff then
+                    times = times + 1
+                end
+            end
+            if times > 0 then
+                return {mult = times * card.ability.extra.deckmult}
+            end
+        elseif context.setting_blind then
+            for i = 1, card.ability.extra.cards do
+                local _card = SMODS.create_card { set = "Base", area = G.discard }
+                SMODS.debuff_card(_card, true, "permanent")
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        G.playing_card = (G.playing_card and G.playing_card + 1) or 1
+                        _card.playing_card = G.playing_card
+                        table.insert(G.playing_cards, _card)
+                        return true
+                    end
+                }))
+                delay(0.2)
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        G.deck:emplace(_card)
+                        _card:start_materialize()
+                        G.GAME.blind:debuff_card(_card)
+                        card:juice_up()
+                        SMODS.calculate_context({ playing_card_added = true, cards = { _card } })
+                        return true
+                    end
+                }))
+                save_run()
+                delay(0.2)
+            end
+            return {message = "Added!"}
+        end
+    end,
+    pools = { ["CJModSet"] = true, ["CJModSetFull"] = true }
+}
+
+SMODS.Joker {
+    key = "butterfly",
+    pos = { x = 0, y = 13 },
+    rarity = 2,
+    atlas = "main",
+    config = { extra = { current = 1, xchips = 0.3 } },
+    cost = 7,
+    loc_txt = {
+        name = "Butterfly Curve",
+        text = {
+            "Gains {X:chips,C:white}X#2#{} Chips",
+            "when a card with a {C:green}Venom Seal{}",
+            "gets destroyed",
+            "{C:inactive}(Currently {X:chips,C:white}X#1#{C:inactive}){}"
+        }
+    },
+    loc_vars = function(self, info_queue, card)
+        info_queue[#info_queue + 1] = G.P_SEALS["CJMod_venom"]
+        return { vars = { card.ability.extra.current, card.ability.extra.xchips } }
+    end,
+    calculate = function(self, card, context)
+        if context.destroying_card then
+            local _card = context.destroying_card
+            if _card and _card.venombreak then
+                card.ability.extra.current = card.ability.extra.current + card.ability.extra.xchips
+                return {message = "Upgraded!"}
+            end
+        elseif context.joker_main then
+            return {xchips = card.ability.extra.current}
+        end
+    end,
+    in_pool = function (self, args)
+        if G.playing_cards then
+            for n,x in pairs(G.playing_cards) do
+                if x and x:get_seal(false) == "CJMod_venom" then
+                    return true
+                end
+            end
+        end
+        return false
+    end,
+    pools = { ["CJModSet"] = true, ["CJModSetFull"] = true }
+}

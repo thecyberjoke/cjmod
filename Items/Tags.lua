@@ -87,34 +87,34 @@ SMODS.Tag {
     min_ante = 1,
     atlas = "Tags",
     pos = { x = 0, y = 2 },
-    config = { pool = "food" },
+    config = { pool = "food", amount = 2 },
     loc_vars = function(self, info_queue, tag)
         return { vars = { } }
     end,
     loc_txt = {
         name = "Stereotype",
         text = {
-            "Next shop has a ",
-            "free Food Joker",
+            "Creates up to 2",
+            "food Jokers",
+            "(Won't trigger until there's space)"
         }
     },
     apply = function(self, tag, context)
-        if context.type == 'store_joker_create' then
-            local card = SMODS.create_card {
-                set = "food",
-                area = context.area,
-                key_append = "CJMod_stereotype"
-            }
-            create_shop_card_ui(card, 'Joker', context.area)
-            card.states.visible = false
-            tag:yep('+', G.C.RED, function()
-                card:start_materialize()
-                card.ability.couponed = true
-                card:set_cost()
+        if context.type == "immediate" then
+            if G.jokers and G.jokers.config.card_limit > #G.jokers.cards then
+                tag:yep('+', G.C.GREEN, function()
+                    for i = 1, tag.config.amount do
+                        if G.jokers and #G.jokers.cards < G.jokers.config.card_limit then
+                            local card = SMODS.add_card{
+                                set = "food"
+                            }
+                            G.jokers:emplace(card)
+                        end
+                    end 
+                    return true
+                end)
                 return true
-            end)
-            tag.triggered = true
-            return card
+            end
         end
     end
 }
@@ -198,32 +198,23 @@ SMODS.Tag {
                         end
                     end,
                     [12] = function ()
-                        play_sound("CJMod_glitch".. math.random(1,4))
-                    end,
-                    [13] = function ()
                         love.timer.sleep(math.random(150,1700)*0.01)
                     end,
                 }
-                local odd1 = pseudorandom(pseudoseed("FUCK"), 1, 13)
+                local odd1 = pseudorandom(pseudoseed("FUCK"), 1, 12)
                 local odd2 = nil
                 while not odd2 or odd2 == odd1 do
-                    odd2 = pseudorandom(pseudoseed("FUCK"), 1, 13)
+                    odd2 = pseudorandom(pseudoseed("FUCK"), 1, 12)
                 end
                 local odd3 = nil
                 while not odd3 or odd3 == odd2 or odd3 == odd1 do
-                    odd3 = pseudorandom(pseudoseed("FUCK"), 1, 13)
+                    odd3 = pseudorandom(pseudoseed("FUCK"), 1, 12)
                 end
-                local odd4 = nil
-                while not odd4 or odd4 == odd3 or odd4 == odd2 or odd4 == odd1 do
-                    odd4 = pseudorandom(pseudoseed("FUCK"), 1, 13)
-                end
+                play_sound("CJMod_glitch".. math.random(1,4))
+                love.timer.sleep(math.random(5,30)*0.1)
                 randomfunctions[odd1]()
-                love.timer.sleep(math.random(5,30)*0.1)
                 randomfunctions[odd2]()
-                love.timer.sleep(math.random(5,30)*0.1)
                 randomfunctions[odd3]()
-                love.timer.sleep(math.random(5,30)*0.1)
-                randomfunctions[odd4]()
                 save_run()
                 return true
             end)
