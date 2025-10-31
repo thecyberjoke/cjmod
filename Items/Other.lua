@@ -22,6 +22,19 @@ function create_UIBox_custom_video1(name, buttonname)
   return t
 end
 
+function modify(t, min, max, mult)
+  if t and type(t) == "table" then
+    for m, y in pairs(t) do
+      if type(y) == "table" then
+        modify(y, min, max, mult)
+      elseif type(y) == "number" then
+        local modifier = pseudorandom(pseudoseed("ssdfg"), min * (mult or 1), max * (mult or 1))/mult
+        t[m] = y * modifier
+      end
+    end
+  end
+end
+
 CJModGradients = {
   stupid = SMODS.Gradient {
     key = "stupid",
@@ -96,3 +109,4 @@ SMODS.Voucher{
   cost = 10,
   requires = {"v_CJMod_cardjutsu"}
 }
+

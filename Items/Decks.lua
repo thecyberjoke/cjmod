@@ -308,18 +308,6 @@ SMODS.Back {
         return {vars = { }}
     end,
     calculate = function (self, back, context)
-        local function modify(t)
-            if t and type(t) == "table" then
-                for m, y in pairs(t) do
-                    if type(y) == "table" then
-                        modify(y)
-                    elseif type(y) == "number" then
-                        local modifier = pseudorandom(pseudoseed("ssdfg"), 50, 250)*0.01
-                        t[m] = y * modifier
-                    end
-                end
-            end
-        end
         if context.starting_shop or context.reroll_shop then
             for n, x in pairs(G.shop_jokers.cards) do
                 if x and x.ability then
@@ -363,7 +351,7 @@ SMODS.Back {
                 func = function()
                     for n, x in pairs(G.pack_cards.cards) do
                         if x and x.ability then
-                            modify(x.ability)
+                            modify(x.ability, 0.5, 2.5, 100)
                             if x.ability.set == "Default" or x.ability.set == "Enhanced" then
                                 x.ability.bonus = (x.ability.bonus or 0) + (x:get_chip_bonus() * pseudorandom(pseudoseed("ssdfg"), 50, 250)*0.01) - x:get_chip_bonus()
                             end

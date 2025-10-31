@@ -10,7 +10,7 @@ SMODS.Seal {
     name = "venom",
     key = "venom",
     badge_colour = HEX("83ef65"),
-	config = { extra = { xchips = 1.5, venomcount = 3} },
+	config = { extra = { xchips = 1.5, venomcount = 1} },
     loc_txt = {
         label = 'Venom Seal',
         name = 'Venom Seal',

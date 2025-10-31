@@ -2144,7 +2144,7 @@ SMODS.Joker {
         return { vars = { card.ability.extra.chips } }
     end,
     calculate = function(self, card, context)
-        if context.post_trigger and context.other_card and context.cardarea == G.jokers and (context.main_scoring or context.before or context.final_scoring_step) then
+        if context.post_trigger and context.other_card and G.GAME.blind and not context.end_of_round and not context.blind_defeated and not context.after and not context.discard and not context.pre_discard and not context.destroying_card and not context.drawing_cards and not context.hand_drawn and not context.first_hand_drawn and not context.selling_card and not context.using_consumeable then
             if G.STATE ~= G.STATES.HAND_PLAYED then return end
             local joker = context.other_card
             local pos = find(G.jokers.cards, card)
@@ -2177,7 +2177,7 @@ SMODS.Joker {
         return { vars = { card.ability.extra.mult } }
     end,
     calculate = function(self, card, context)
-        if context.post_trigger and context.other_card and context.cardarea == G.jokers and (context.main_scoring or context.before or context.final_scoring_step) then
+        if context.post_trigger and context.other_card and G.GAME.blind and not context.end_of_round and not context.blind_defeated and not context.after and not context.discard and not context.pre_discard and not context.destroying_card and not context.drawing_cards and not context.hand_drawn and not context.first_hand_drawn and not context.selling_card and not context.using_consumeable then
             if G.STATE ~= G.STATES.HAND_PLAYED then return end
             local joker = context.other_card
             local pos = find(G.jokers.cards, card)
@@ -2938,6 +2938,7 @@ SMODS.Joker {
                     func = function()
                         G.playing_card = (G.playing_card and G.playing_card + 1) or 1
                         _card.playing_card = G.playing_card
+                        G.deck:emplace(_card)
                         table.insert(G.playing_cards, _card)
                         return true
                     end
@@ -2945,7 +2946,6 @@ SMODS.Joker {
                 delay(0.2)
                 G.E_MANAGER:add_event(Event({
                     func = function()
-                        G.deck:emplace(_card)
                         _card:start_materialize()
                         G.GAME.blind:debuff_card(_card)
                         card:juice_up()
@@ -2974,7 +2974,8 @@ SMODS.Joker {
         text = {
             "Gains {X:chips,C:white}X#2#{} Chips",
             "when a card with a {C:green}Venom Seal{}",
-            "gets destroyed",
+            "gets destroyed, then duplicates it with a",
+            "{C:dark_edition}Random{} Seal",
             "{C:inactive}(Currently {X:chips,C:white}X#1#{C:inactive}){}"
         }
     },
@@ -2986,6 +2987,17 @@ SMODS.Joker {
         if context.destroying_card then
             local _card = context.destroying_card
             if _card and _card.venombreak then
+                G.E_MANAGER:add_event(Event({
+                    trigger = "immediate",
+                    func = function()
+                        local copy = copy_card(_card)
+                        copy.venombreak = false
+                        copy:set_seal(SMODS.poll_seal({guaranteed = true}), true, true)
+                        G.hand:emplace(copy)
+                        table.insert(G.playing_cards, copy)
+                        return true
+                    end
+                }))
                 card.ability.extra.current = card.ability.extra.current + card.ability.extra.xchips
                 return {message = "Upgraded!"}
             end
