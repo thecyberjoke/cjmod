@@ -108,7 +108,6 @@ SMODS.Tag {
                             local card = SMODS.add_card{
                                 set = "food"
                             }
-                            G.jokers:emplace(card)
                         end
                     end 
                     return true
