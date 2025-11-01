@@ -140,18 +140,36 @@ SMODS.Blind{
     loc_txt = {
         name = "The Teller",
         text = {
-            "Must play less than 4 cards"
+            "Played cards after the 3rd",
+            "are debuffed"
         }
     },
     calculate = function(self, blind, context)
         if not blind.disabled then
-            if context.debuff_hand then
-                if #G.play.cards >= 4 then
-                    return {debuff = true}
+            if context.before then
+                blind.triggered = false
+                for n, x in pairs(G.play.cards) do
+                    if type(n) == "number" and n > 3 then
+                        if not blind.triggered then
+                            blind.triggered = true
+                            blind:wiggle()
+                        end
+                        SMODS.debuff_card(x, true, "Teller")
+                    end
                 end
             end
         end
     end,
+    disable = function (self)
+        for n, x in pairs(G.playing_cards) do
+            SMODS.debuff_card(x, true, "Teller")
+        end
+    end,
+    defeat = function (self)
+        for n, x in pairs(G.playing_cards) do
+            SMODS.debuff_card(x, true, "Teller")
+        end
+    end
 }
 
 SMODS.Blind{
@@ -296,15 +314,24 @@ SMODS.Blind{
     calculate = function(self, blind, context)
         if not blind.disabled then
             if context.setting_blind then
-                blind.discards_sub = math.max(0, G.GAME.current_round.discards_left - 1)
-                blind.hands_sub = G.GAME.current_round.hands_left - 2
+                local handst = G.GAME.round_resets.hands
+                local discst = G.GAME.round_resets.discards
 
-                while blind.hands_sub < 0 do
-                    blind.hands_sub = blind.hands_sub + 1
+                local totalhand = handst - 2
+                local totaldisc = math.max(0, discst - 1)
+
+                local deduct1 = 2
+                local deduct2 = 1
+
+                while totalhand <= 0 and deduct1 > 0 do
+                    deduct1 = deduct1 - 1
+                    totalhand = handst - deduct1
                 end
 
-                ease_hands_played(-blind.hands_sub)
-                ease_discard(-blind.discards_sub)
+                blind.hands_sub = deduct1
+                blind.discards_sub = deduct2
+                ease_hands_played(-deduct1)
+                ease_discard(-deduct2)
             end
         end
     end,
