@@ -39,9 +39,17 @@ function SMODS.calculate_context(context, return_table)
             local deck = G.GAME.selected_back
             local extra = 0
             if deck.effect.config and deck.effect.config.blind_payout then
-                extra = deck.effect.config.blind_payout
+                extra = extra + deck.effect.config.blind_payout
             end
-            blind.dollars = math.max(0, blind.dollars + extra)
+            if G.GAME.blind_payout then
+                extra = extra + G.GAME.blind_payout
+            end
+            if not (G.GAME.modifiers.no_blind_reward and G.GAME.modifiers.no_blind_reward[blind.name]) then
+                blind.dollars = math.max(0, blind.dollars + extra)
+            else
+                blind.dollars = 0
+            end
+            
             if blind.dollars > 0 then
                 G.GAME.current_round.dollars_to_be_earned = string.rep("$", blind.dollars)
             else
@@ -395,12 +403,15 @@ function create_UIBox_blind_choice(type, run_info)
     local deck = G.GAME.selected_back
     local extra = 0
     if deck.effect.config and deck.effect.config.blind_payout then
-        extra = deck.effect.config.blind_payout
+        extra = extra + deck.effect.config.blind_payout
+    end
+    if G.GAME.blind_payout then
+        extra = extra + G.GAME.blind_payout
     end
 
     if t.nodes[1].nodes[3].nodes[1].nodes[2].nodes[3] and blind_choice and blind_choice.config and blind_choice.config.dollars then
         local cash = math.max(0, blind_choice.config.dollars + extra)
-        if cash > 0 then
+        if cash > 0 and not (G.GAME.modifiers.no_blind_reward and G.GAME.modifiers.no_blind_reward[blind_choice.config.name]) then
             t.nodes[1].nodes[3].nodes[1].nodes[2].nodes[3].nodes[2].config.text = string.rep(localize("$"), cash) .. '+'
         else
             t.nodes[1].nodes[3].nodes[1].nodes[2].nodes[3].nodes[2].config.text = "n/a"
