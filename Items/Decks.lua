@@ -32,11 +32,14 @@ SMODS.Back {
     pos = { x = 1, y = 0 },
     unlocked = true,
     discovered = true,
+    config = { vouchers = { 'v_CJMod_cardjutsu', 'v_CJMod_infinitus' } },
     loc_txt = {
         name = "Discoloured Deck",
         text = {
             "Keep only {C:attention}2{} {C:spades}card suits{}",
-            "for {C:red}each rank{}"
+            "for {C:red}each rank{}",
+            "Start with {C:green,E:1,T:v_CJMod_cardjutsu}Paper Jutsu{} and",
+            "{C:green,E:2,T:v_CJMod_infinitus}Cardis Infinitus{}"
         },
     },
     apply = function(self, back)

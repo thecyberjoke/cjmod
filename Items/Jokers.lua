@@ -11,7 +11,8 @@ SMODS.Joker {
         name = "The Group",
         text = {
             "Get {C:mult}#1#{} Mult and {X:chips,C:white}X1.3{}",
-            "for every CJ Mod Joker you have {C:inactive}(including self){}",
+            "for every CJ Mod Joker you have",
+            "{C:inactive}(Excluding itself){}",
         }
     },
     loc_vars = function(self, info_queue, card)
@@ -21,7 +22,7 @@ SMODS.Joker {
         if context.cardarea == G.jokers and context.joker_main then
             local times = 0
             for n, x in pairs(G.jokers.cards) do
-                if x.original_mod == SMODS.current_mod then
+                if x.original_mod == SMODS.current_mod and x ~= card then
                     times = times + 1
                 end
             end
