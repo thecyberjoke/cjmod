@@ -1454,7 +1454,7 @@ SMODS.Joker {
     calculate = function(self, card, context)
         if context.selling_self and not context.blueprint_card then
             local current = card.ability.extra.current
-            if current then
+            if current ~= "" then
                 SMODS.add_card({ key = card.ability.extra.current, edition = poll_edition(nil, true, true, true) })
             end
             play_sound("timpani")
