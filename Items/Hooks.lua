@@ -58,7 +58,6 @@ function SMODS.calculate_context(context, return_table)
             
         end
     end
-<<<<<<< HEAD
 
     --[[
 
@@ -70,8 +69,6 @@ function SMODS.calculate_context(context, return_table)
         end
     end
     ]]
-=======
->>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     return ret
 end
 
@@ -448,7 +445,6 @@ G.FUNCS.draw_from_play_to_discard = function(e)
             it = it + 1
         end
     end
-<<<<<<< HEAD
 end
 
 --[[
@@ -489,6 +485,3 @@ function G.UIDEF.card_focus_ui(card)
 end
 
 ]]
-=======
-end
->>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
