@@ -1,0 +1,174 @@
+
+if not CJMod then
+    CJMod = {}
+end
+
+CJMod = {
+    show_options_button = true,
+    
+}
+
+CJMod = SMODS.current_mod
+CJMod_config = CJMod.config
+CJMod.enabled = copy_table(CJMod_config)
+CJMod.optional_features = function()
+    return {
+        retrigger_joker = true,
+        post_trigger = true,
+    }
+end
+
+SMODS.Atlas{
+    object_type = "Atlas",
+    key = "main",
+    path = "Jokers.png",
+    px = 71,
+    py = 95,
+}
+SMODS.Atlas{
+    key = "Tarot",
+    path = "Tarots.png",
+    px = 71,
+    py = 95,
+}
+SMODS.Atlas{
+    key = "Booster",
+    path = "Boosters.png",
+    px = 71,
+    py = 95,
+}
+SMODS.Atlas{
+    key = "Decks",
+    path = "Decks.png",
+    px = 71,
+    py = 95,
+}
+SMODS.Atlas{
+    key = "Blinds",
+    path = "Blinds.png",
+    px = 34,
+    py = 34,
+    frames = 1,
+    atlas_table = 'ANIMATION_ATLAS'
+}
+
+SMODS.Atlas({
+	key = "modicon",
+	path = "icon.png",
+	px = 32,
+	py = 32,
+})
+
+SMODS.Atlas({
+	key = "Tags",
+	path = "Tags.png",
+	px = 34,
+	py = 34,
+})
+
+SMODS.Atlas({
+	key = "Vouchers",
+	path = "Vouchers.png",
+	px = 71,
+	py = 95,
+})
+
+SMODS.Atlas({
+	key = "Trinkets",
+	path = "Trinkets.png",
+	px = 66,
+	py = 66,
+})
+
+SMODS.Sound({
+    key = "hiss",
+    path = "hiss.ogg",
+    pitch = 1.1
+})
+
+SMODS.Sound{
+    key = "glitch1",
+    path = "glitch1.ogg"
+}
+
+SMODS.Sound{
+    key = "glitch2",
+    path = "glitch2.ogg"
+}
+
+SMODS.Sound{
+    key = "glitch3",
+    path = "glitch3.ogg"
+}
+
+SMODS.Sound{
+    key = "glitch4",
+    path = "glitch4.ogg"
+}
+
+local mod_path = "" .. SMODS.current_mod.path
+CJMod.path = mod_path
+
+local files = NFS.getDirectoryItems(mod_path .. "items")
+for _, file in ipairs(files) do
+	local f, err = SMODS.load_file("Items/" .. file)
+	if err then
+		error(err) 
+	end
+    if f then
+        f()
+    end
+end
+
+SMODS.ObjectType({
+    key = "CJModSet",
+    default = "j_card_sharp",
+    cards = {},
+    inject = function(self)
+        SMODS.ObjectType.inject(self)
+    end,
+})
+
+SMODS.ObjectType({
+    key = "CJModSetFull",
+    default = "j_gros_michel",
+    cards = {},
+    inject = function(self)
+        SMODS.ObjectType.inject(self)
+    end,
+})
+
+SMODS.ObjectType({
+    key = "CJModChess",
+    default = "j_CJMod_pawnjoker",
+    cards = {},
+    inject = function(self)
+        SMODS.ObjectType.inject(self)
+    end,
+})
+
+SMODS.ObjectType({
+    key = "Trinket",
+    default = "trk_CJMod_gold",
+    cards = {},
+    inject = function(self)
+        SMODS.ObjectType.inject(self)
+    end,
+})
+
+SMODS.ObjectType({
+    key = "food",
+    default = "j_ice_cream",
+    cards = {
+        ["j_gros_michel"] = true,
+        ["j_cavendish"] = true,
+        ["j_popcorn"] = true,
+        ["j_ice_cream"] = true,
+        ["j_ramen"] = true,
+        ["j_diet_cola"] = true,
+        ["j_turtle_bean"] = true,
+        ["j_egg"] = true,
+        ["j_CJMod_macaron"] = true,
+        ["j_CJMod_wafflejoker"] = true
+    },
+})
