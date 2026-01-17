@@ -73,6 +73,7 @@ SMODS.Atlas({
 	py = 95,
 })
 
+<<<<<<< HEAD
 SMODS.Atlas({
 	key = "Trinkets",
 	path = "Trinkets.png",
@@ -80,6 +81,8 @@ SMODS.Atlas({
 	py = 66,
 })
 
+=======
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
 SMODS.Sound({
     key = "hiss",
     path = "hiss.ogg",
@@ -148,6 +151,7 @@ SMODS.ObjectType({
 })
 
 SMODS.ObjectType({
+<<<<<<< HEAD
     key = "Trinket",
     default = "trk_CJMod_gold",
     cards = {},
@@ -157,6 +161,8 @@ SMODS.ObjectType({
 })
 
 SMODS.ObjectType({
+=======
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     key = "food",
     default = "j_ice_cream",
     cards = {

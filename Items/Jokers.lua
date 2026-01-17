@@ -10,7 +10,11 @@ SMODS.Joker {
     loc_txt = {
         name = "The Group",
         text = {
+<<<<<<< HEAD
             "{C:mult}+#1#{} Mult and {X:chips,C:white}X1.3{}",
+=======
+            "Get {C:mult}#1#{} Mult and {X:chips,C:white}X1.3{}",
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
             "for every CJ Mod Joker you have",
             "{C:inactive}(Excluding itself){}",
         }
@@ -39,6 +43,7 @@ SMODS.Joker {
     pos = { x = 1, y = 0 },
     rarity = 1,
     atlas = "main",
+<<<<<<< HEAD
     config = { extra = { mult = 3 } },
     cost = 4,
     blueprint_compat = true,
@@ -50,15 +55,36 @@ SMODS.Joker {
             "    {C:chips}chips{} = {C:chips}chips{} + {C:mult}mult{} * {C:attention}#1#{}",
             "  {C:red}end{}",
             "{C:red}end{}"
+=======
+    config = { extra = { mult = 5 } },
+    cost = 6,
+    blueprint_compat = true,
+    loc_txt = {
+        name = "Lua Object",
+        text = {
+            "Everytime a hand is played,",
+            "Lose {C:attention}25%{} of your current money",
+            "and get {X:mult,C:white}+#1#{} mult per cash lost.",
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
         }
     },
     loc_vars = function(self, info_queue, card)
         return { vars = { card.ability.extra.mult } }
     end,
     calculate = function(self, card, context)
+<<<<<<< HEAD
         if context.individual and context.cardarea == G.play and context.other_card and not context.other_card.debuff then
             if SMODS.get_enhancements(context.other_card) then
                 return {chips = mult * card.ability.extra.mult}
+=======
+        if context.joker_main then
+            local cash = G.GAME.dollars
+            if cash >= 5 then
+                local calculated = math.ceil(cash / 5)
+                return { mult = card.ability.extra.mult * calculated, dollars = -calculated }
+            else
+                return { message = "Too broke!" }
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
             end
         end
     end,
@@ -68,22 +94,36 @@ SMODS.Joker {
 SMODS.Joker {
     key = "qoljoker",
     pos = { x = 2, y = 0 },
+<<<<<<< HEAD
     rarity = 1,
     atlas = "main",
     blueprint_compat = true,
     config = { extra = { payout = 2, odds = 15 } },
+=======
+    rarity = 2,
+    atlas = "main",
+    blueprint_compat = true,
+    config = { extra = { X_mult = 15, X_chips = 75, odds = 15 } },
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     cost = 6,
 
     loc_txt = {
         name = "Quality Of Life",
         text = {
+<<<<<<< HEAD
             "{C:money}+#1#${} blind payout",
             "{C:green}#2# in #3#{} to {C:mult}self destruct",
             "at end of blind"
+=======
+            "Either gives {X:mult,C:white}+#1#{} mult",
+            "Or {X:chips,C:white}+#2#{} chips",
+            "{C:green}#3# in #4# chance{} to {C:mult}self destruct",
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
         }
     },
     loc_vars = function(self, info_queue, card)
         local nom, denom = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, "QOLDestruct")
+<<<<<<< HEAD
         return { vars = { card.ability.extra.payout, nom, denom } }
     end,
     add_to_deck = function (self, card, from_debuff)
@@ -97,6 +137,20 @@ SMODS.Joker {
             if SMODS.pseudorandom_probability(card, "QOLDestruct", 1, card.ability.extra.odds) then
                 SMODS.destroy_cards(card)
                 return { message = "Terraria has encountered a fatal error and has crashed.", remove = true }
+=======
+        return { vars = { card.ability.extra.X_mult, card.ability.extra.X_chips, nom, denom } }
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            local val = pseudorandom("Poopoo", 1, 2)
+            if SMODS.pseudorandom_probability(card, "QOLDestruct", 1, card.ability.extra.odds) then
+                SMODS.destroy_cards(card)
+                return { message = "Terraria has encountered a fatal error and has crashed.", remove = true }
+            elseif val == 2 then
+                return { chips = card.ability.extra.X_chips }
+            else
+                return { mult = card.ability.extra.X_mult }
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
             end
         end
     end,
@@ -110,7 +164,11 @@ SMODS.Joker {
     atlas = "main",
     blueprint_compat = false,
     config = { extra = { mult = 4 } },
+<<<<<<< HEAD
     cost = 10,
+=======
+    cost = 6,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     loc_txt = {
         name = "cyberjoker",
         text = {
@@ -136,14 +194,22 @@ SMODS.Joker {
 SMODS.Joker {
     key = "abyssesconvention",
     pos = { x = 4, y = 0 },
+<<<<<<< HEAD
     rarity = 2,
     atlas = "main",
     blueprint_compat = true,
     config = { extra = { perc = 10 } },
+=======
+    rarity = 1,
+    atlas = "main",
+    blueprint_compat = true,
+    config = { extra = { mult = 7, chip = 40, type = "Pair" } },
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     cost = 6,
     loc_txt = {
         name = "Abysses' Convention",
         text = {
+<<<<<<< HEAD
             "Reduces {C:blue}blind size{} by {C:green}#1#%{}"
         }
     },
@@ -186,6 +252,23 @@ SMODS.Joker {
                     return true
                 end
             }))
+=======
+            "If played hand is a pair or better,",
+            "Add {X:mult,C:white}+#1#{} mult",
+            "Otherwise, add {X:chips,C:white}+#2#{} chips"
+        }
+    },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.mult, card.ability.extra.chip, card.ability.extra.antimult, localize(card.ability.extra.type, 'poker_hands') } }
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            if next(context.poker_hands[card.ability.extra.type]) then
+                return { mult = card.ability.extra.mult }
+            else
+                return { chips = card.ability.extra.chip }
+            end
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
         end
     end,
     pools = { ["CJModSet"] = true, ["CJModSetFull"] = true },
@@ -344,9 +427,15 @@ SMODS.Joker {
     loc_txt = {
         name = "BasedAgentLmao",
         text = {
+<<<<<<< HEAD
             "For every pair in hand",
             "{C:mult}+#1#{} mult and {C:chips}+#2#{} chips",
             "Triggers multiple times for better pairs"
+=======
+            "For every pair in hand,",
+            "Get {C:mult}#1#{} mult and {C:chips}#2#{} chips.",
+            "Gain extra if there's a three/four/five of a kind."
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
         }
     },
     loc_vars = function(self, info_queue, card)
@@ -568,7 +657,11 @@ SMODS.Joker {
     pos = { x = 1, y = 2 },
     rarity = "CJMod_stupid",
     atlas = "main",
+<<<<<<< HEAD
     config = { extra = { givemoney = false, overshot = 0, max = 20, money = 5 } },
+=======
+    config = { extra = { givemoney = false, overshot = 0, max = 20 } },
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     cost = 12,
     blueprint_compat = false,
     loc_txt = {
@@ -576,12 +669,20 @@ SMODS.Joker {
         text = {
             "If the current score (not total)",
             "is more than the blind's required score,",
+<<<<<<< HEAD
             "{C:money}+#4#${} * Overkill Percentage.",
+=======
+            "get {C:money}5${} * Overkill Percentage.",
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
             "{C:inactive}(Maximum {C:money}#3#${}.){}"
         }
     },
     loc_vars = function(self, info_queue, card)
+<<<<<<< HEAD
         return { vars = { card.ability.extra.mult, card.ability.extra.chips, card.ability.extra.max, card.ability.extra.money } }
+=======
+        return { vars = { card.ability.extra.mult, card.ability.extra.chips, card.ability.extra.max } }
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     end,
     calculate = function(self, card, context)
         if context.final_scoring_step then
@@ -595,7 +696,11 @@ SMODS.Joker {
     calc_dollar_bonus = function(self, card)
         if card.ability.extra.givemoney then
             card.ability.extra.givemoney = false
+<<<<<<< HEAD
             return math.min(math.floor(card.ability.extra.money * (card.ability.extra.overshot / G.GAME.blind.chips)), card.ability.extra.max)
+=======
+            return math.min(math.floor(5 * (card.ability.extra.overshot / G.GAME.blind.chips)), card.ability.extra.max)
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
         end
     end,
     pools = { ["CJModSetFull"] = true },
@@ -623,7 +728,11 @@ SMODS.Joker {
     end,
     calculate = function(self, card, context)
         if context.joker_main then
+<<<<<<< HEAD
             local result = mult^card.ability.extra.current
+=======
+            local result = math.pow(mult, card.ability.extra.current)
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
             return { mult = math.max(math.floor(result - mult), (-mult + 1)) }
         elseif context.final_scoring_step and context.cardarea == G.jokers then
             card.ability.extra.current = pseudorandom("The Thing", card.ability.extra.min * 100,
@@ -639,39 +748,60 @@ SMODS.Joker {
     pos = { x = 0, y = 3 },
     rarity = 2,
     atlas = "main",
+<<<<<<< HEAD
     config = { extra = { value = 1.25, current = 1, lost = 0, money = 2} },
+=======
+    config = { extra = { value = 1.25, current = 1 } },
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     blueprint_compat = false,
     cost = 9,
     loc_txt = {
         name = "On The Edge",
         text = {
+<<<<<<< HEAD
             "Lose all your hands but one",
             "{X:mult,C:white}+X#1#{} per each hand lost",
             "plus {C:money}+#2#{}$ per hand at end of blind",
+=======
+            "Lose all your hands but one.",
+            "Get {X:mult,C:white}X#1#{} for each hand lost,",
+            "Plus {C:attention}1${} for every 2 hands lost.",
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
             "{C:inactive}(Currently {X:mult,C:white}X#2#{}){}"
         }
     },
     loc_vars = function(self, info_queue, card)
+<<<<<<< HEAD
         return { vars = { card.ability.extra.value, card.ability.extra.current, card.ability.extra.money } }
+=======
+        return { vars = { card.ability.extra.value, card.ability.extra.current } }
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     end,
     calculate = function(self, card, context)
         if context.setting_blind and context.cardarea == G.jokers then
             local result = G.GAME.current_round.hands_left - 1
             local cash = math.ceil(result * 1.5)
             card.ability.extra.current = math.max(card.ability.extra.value * result, 1)
+<<<<<<< HEAD
             card.ability.extra.lost = math.max(0, G.GAME.current_round.hands_left - 1)
+=======
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
             G.GAME.current_round.hands_left = 1
             return { message = "Upgraded!", dollars = math.max(0, cash) }
         elseif context.joker_main then
             return { xmult = card.ability.extra.current }
         elseif context.end_of_round and context.main_eval then
             card.ability.extra.current = 1
+<<<<<<< HEAD
             local cash = 0
             if card.ability.extra.lost > 0 then
                 cash = card.ability.extra.lost * card.ability.extra.money
             end
             card.ability.extra.lost = 0
             return { dollars = cash }
+=======
+            return { message = "Reset!" }
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
         end
     end,
     pools = { ["CJModSet"] = true, ["CJModSetFull"] = true },
@@ -762,7 +892,12 @@ SMODS.Joker {
                     end
 
                     play_sound('timpani')
+<<<<<<< HEAD
                     
+=======
+
+                    G.jokers.config.card_limit = G.jokers.config.card_limit - 1
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
                     return true
                 end)
             }))
@@ -1124,12 +1259,17 @@ SMODS.Joker {
     pos = { x = 4, y = 4 },
     rarity = 1,
     atlas = "main",
+<<<<<<< HEAD
     config = { extra = { min = 0, max = 200 } },
+=======
+    config = { extra = { chips = 75 } },
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     cost = 5,
     blueprint_compat = true,
     loc_txt = {
         name = "Bad Atlas",
         text = {
+<<<<<<< HEAD
             "{C:chips}+#1#-#2#{}"
         }
     },
@@ -1139,6 +1279,20 @@ SMODS.Joker {
     calculate = function(self, card, context)
         if context.joker_main then
             return {chips = pseudorandom(pseudoseed("badatlar"), card.ability.extra.min, card.ability.extra.max)}
+=======
+            "{C:chips}+#1#{} Chips if {C:chips}Chips{}",
+            "is a multiple of {C:attention}2{} when triggered"
+        }
+    },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.chips } }
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            if hand_chips % 3 == 0 then
+                return { chips = card.ability.extra.chips }
+            end
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
         end
     end,
     pools = { ["CJModSet"] = true, ["CJModSetFull"] = true },
@@ -1190,7 +1344,11 @@ SMODS.Joker {
     pos = { x = 2, y = 5 },
     rarity = 1,
     atlas = "main",
+<<<<<<< HEAD
     config = { extra = { money = 7, sell = 9, obtained = false } },
+=======
+    config = { extra = { money = 5, sell = 8, obtained = false } },
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
 
     cost = 0,
     blueprint_compat = false,
@@ -1206,6 +1364,7 @@ SMODS.Joker {
         return { vars = { card.ability.extra.money, card.ability.extra.sell } }
     end,
     set_ability = function (self, card, initial, delay_sprites)
+<<<<<<< HEAD
         G.E_MANAGER:add_event(Event({
             trigger = 'immediate',
             func = function()
@@ -1214,6 +1373,10 @@ SMODS.Joker {
                 return true
             end
         }))
+=======
+        card.ability.couponed = true
+        card:set_cost()
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     end,
     add_to_deck = function(self, card)
         if card and not card.ability.extra.obtained then
@@ -1232,7 +1395,11 @@ SMODS.Joker {
     pos = { x = 3, y = 5 },
     rarity = 1,
     atlas = "main",
+<<<<<<< HEAD
     config = { extra = { cost = 3 } },
+=======
+    config = { extra = { cost = 4 } },
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
 
     cost = 3,
     blueprint_compat = false,
@@ -1269,7 +1436,11 @@ SMODS.Joker {
     config = { mod_conv = 'CJMod_venom', extra = { first = false } },
 
     cost = 9,
+<<<<<<< HEAD
     blueprint_compat = true,
+=======
+    blueprint_compat = false,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     loc_txt = {
         name = "Everlasting Violet",
         text = {
@@ -1858,7 +2029,11 @@ SMODS.Joker {
     rarity = 3,
     atlas = "main",
     config = { extra = {} },
+<<<<<<< HEAD
     eternal_compat = false,
+=======
+
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     cost = 15,
     blueprint_compat = false,
     loc_txt = {
@@ -2166,7 +2341,11 @@ SMODS.Joker {
     atlas = "main",
     config = { extra = { chips = 40 } },
 
+<<<<<<< HEAD
     cost = 3,
+=======
+    cost = 6,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     blueprint_compat = true,
     loc_txt = {
         name = "Purpur Joker",
@@ -2197,9 +2376,15 @@ SMODS.Joker {
     pos = { x = 0, y = 10 },
     rarity = 1,
     atlas = "main",
+<<<<<<< HEAD
     config = { extra = { mult = 4 } },
 
     cost = 3,
+=======
+    config = { extra = { mult = 2 } },
+
+    cost = 6,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     blueprint_compat = true,
     loc_txt = {
         name = "Crimson Joker",
@@ -2232,7 +2417,11 @@ SMODS.Joker {
     atlas = "main",
     config = { extra = { min = 2, max = 5 } },
 
+<<<<<<< HEAD
     cost = 6,
+=======
+    cost = 10,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     blueprint_compat = false,
     loc_txt = {
         name = "NFJ",
@@ -2278,7 +2467,11 @@ SMODS.Joker {
     atlas = "main",
     config = { extra = { mult = 2, chips = 20, multinc = 1, chipsinc = 10, mostused = "High Card" } },
 
+<<<<<<< HEAD
     cost = 4,
+=======
+    cost = 6,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     blueprint_compat = true,
     eternal_compat = false,
     loc_txt = {
@@ -2343,7 +2536,11 @@ SMODS.Joker {
     atlas = "main",
     config = { extra = { xmult = 1.75, odds = 3 } },
 
+<<<<<<< HEAD
     cost = 5,
+=======
+    cost = 7,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     blueprint_compat = true,
     loc_txt = {
         name = "Champion Medal",
@@ -2450,12 +2647,20 @@ SMODS.Joker {
     atlas = "main",
     config = { extra = { chips = 15 } },
 
+<<<<<<< HEAD
     cost = 4,
+=======
+    cost = 5,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     blueprint_compat = true,
     loc_txt = {
         name = "Rookie Coder",
         text = {
+<<<<<<< HEAD
             "{C:chips}+#1#{} Chips * {C:attention}Rounds{}",
+=======
+            "{C:chips}+#1#{} Chips X {C:attention}Rounds{}",
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
         }
     },
     loc_vars = function(self, info_queue, card)
@@ -2476,7 +2681,11 @@ SMODS.Joker {
     atlas = "main",
     config = { extra = { cost = 5 } },
 
+<<<<<<< HEAD
     cost = 9,
+=======
+    cost = 10,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     blueprint_compat = false,
     loc_txt = {
         name = "Cook Joker",
@@ -2498,7 +2707,12 @@ SMODS.Joker {
                     key_append = "CJMod_stereotype",
                     edition = "e_negative"
                 })
+<<<<<<< HEAD
                 newcard.ability.extra_value = -(newcard.sell_cost)
+=======
+                G.jokers:emplace(newcard)
+                newcard.ability.extra_value = -(newcard.sell_cost + 3)
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
                 newcard:set_cost()
                 return { dollars = -card.ability.extra.cost }
             end
@@ -2512,7 +2726,11 @@ SMODS.Joker {
     pos = { x = 2, y = 11 },
     rarity = 2,
     atlas = "main",
+<<<<<<< HEAD
     cost = 5,
+=======
+    cost = 8,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     blueprint_compat = false,
     eternal_compat = false,
     loc_txt = {
@@ -2546,7 +2764,45 @@ SMODS.Joker {
     pos = { x = 3, y = 11 },
     rarity = 2,
     atlas = "main",
+<<<<<<< HEAD
     cost = 5,
+=======
+    cost = 8,
+    blueprint_compat = false,
+    eternal_compat = false,
+    loc_txt = {
+        name = "Creative Flow",
+        text = {
+            "I can't do anything with this",
+            "if i don't have something {C:edition,T:j_CJMod_canvas}to draw on{}..."
+        }
+    },
+    add_to_deck = function(self, card, from_debuff)
+        for n, x in pairs(G.jokers.cards) do
+            if x.config and x.config.center_key == "j_CJMod_canvas" then
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        play_sound('holo1')
+                        SMODS.destroy_cards(card, true, true, true)
+                        SMODS.destroy_cards(x, true, true, true)
+                        SMODS.add_card({ set = "Joker", rarity = "CJMod_stupid" })
+                        return true
+                    end
+                }))
+                break
+            end
+        end
+    end,
+    pools = { ["CJModSet"] = true, ["CJModSetFull"] = true, }
+}
+
+SMODS.Joker {
+    key = "pencil",
+    pos = { x = 3, y = 11 },
+    rarity = 2,
+    atlas = "main",
+    cost = 8,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     blueprint_compat = false,
     eternal_compat = false,
     loc_txt = {
@@ -2580,7 +2836,11 @@ SMODS.Joker {
     pos = { x = 4, y = 11 },
     rarity = "CJMod_stupid",
     atlas = "main",
+<<<<<<< HEAD
     cost = 10,
+=======
+    cost = 14,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     config = { extra = { xmult = 1.5, debuffleft = false, debuffright = false } },
     blueprint_compat = true,
     loc_txt = {
@@ -2672,7 +2932,11 @@ SMODS.Joker {
     loc_txt = {
         name = "string",
         text = {
+<<<<<<< HEAD
             "{C:money}+$#1#{} at the",
+=======
+            "Get {C:money}$#1#{} at the",
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
             "end of the round",
             "for each Joker that you have",
             'that has "Joker" in their name'
@@ -2707,7 +2971,11 @@ SMODS.Joker {
     atlas = "main",
     config = { extra = { } },
 
+<<<<<<< HEAD
     cost = 6,
+=======
+    cost = 8,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     blueprint_compat = false,
     loc_txt = {
         name = "Modern Art",
@@ -2887,14 +3155,22 @@ SMODS.Joker {
     rarity = 2,
     atlas = "main",
     config = { extra = { deckmult = 1, playmult = 5, cards = 3 } },
+<<<<<<< HEAD
     cost = 7,
+=======
+    cost = 8,
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
     loc_txt = {
         name = "Heartbreak",
         text = {
             "{C:mult}+#1#{} Mult for each",
             "{C:red}debuffed{} card in your full deck",
             "{C:inactive}(Currently {C:mult}#4#{C:inactive}){}",
+<<<<<<< HEAD
             "{C:mult}+#2#{} Mult for each {C:red}debuffed",
+=======
+            "Get {C:mult}#2#{} Mult for each {C:red}debuffed",
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
             "card in the scored hand"
         }
     },
@@ -3016,6 +3292,7 @@ SMODS.Joker {
         return false
     end,
     pools = { ["CJModSet"] = true, ["CJModSetFull"] = true }
+<<<<<<< HEAD
 }
 
 SMODS.Joker {
@@ -3512,3 +3789,6 @@ SMODS.Joker {
     pools = { ["CJModSet"] = true, ["CJModSetFull"] = true }
 }
 ]]--
+=======
+}
+>>>>>>> 5d39ebcf0869595a2c089dfb2159ff847c22a72d
