@@ -87,10 +87,10 @@ SMODS.Joker {
         return { vars = { card.ability.extra.payout, nom, denom } }
     end,
     add_to_deck = function (self, card, from_debuff)
-        G.GAME.blind_payout = G.GAME.blind_payout + card.ability.extra.payout
+        G.GAME.blind_payout = (G.GAME.blind_payout or 0) + card.ability.extra.payout
     end,
     remove_from_deck = function (self, card, from_debuff)
-        G.GAME.blind_payout = G.GAME.blind_payout - card.ability.extra.payout
+        G.GAME.blind_payout = (G.GAME.blind_payout or 0) - card.ability.extra.payout
     end,
     calculate = function(self, card, context)
         if context.end_of_round and context.main_eval then
