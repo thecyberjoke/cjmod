@@ -52,7 +52,7 @@ SMODS.Rarity {
   loc_txt = {
       name = "Stupid",
   },
-  default_weight = 0.02,
+  default_weight = 0.0325,
   badge_colour = CJModGradients.stupid,
   get_weight = function(self, weight, object_type)
     return weight
