@@ -223,7 +223,7 @@ SMODS.Consumable {
       name = "Enchant",
       text = {
         "Add a {C:dark_edition}negative{} edition to all cards in hand",
-        "{C:red}-2{} hand size"
+        "{C:red}All hands set to level 1{}"
       }
     },
     config = { extra = { edition = "e_negative" }},
@@ -256,9 +256,10 @@ SMODS.Consumable {
                 end
             }))
         end
-        G.hand:change_size(-2)
-        if G.GAME.blind.chips > 0 then
-            G.hand:draw()
+        for n, x in pairs(G.GAME.hands) do
+            x.chips = x.s_chips
+            x.mult = x.s_mult
+            x.level = 1
         end
     end,
     can_use = function(self, card)

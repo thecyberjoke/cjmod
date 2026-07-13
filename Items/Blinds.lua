@@ -299,7 +299,7 @@ SMODS.Blind{
 SMODS.Blind{
     key = "wee",
     dollars = 4,
-    mult = 1.5,
+    mult = 1.25,
     atlas = "Blinds",
     pos = { y = 9 },
     boss = { min = 1 },
@@ -356,7 +356,7 @@ SMODS.Blind{
         name = "The Hater",
         text = {
             "All jokers debuffed until",
-            "a {}#1#{} is played,",
+            "{}#1#{} is played,",
             "smaller blind size"
         }
     },
@@ -364,7 +364,7 @@ SMODS.Blind{
         return { vars = { localize(G.GAME.current_round.least_played_poker_hand, "poker_hands") } }
     end,
     collection_loc_vars = function(self)
-        return { vars = { "the least played hand" } }
+        return { vars = { "(least played hand)" } }
     end,
     calculate = function(self, blind, context)
         if not blind.disabled then
@@ -419,8 +419,8 @@ SMODS.Blind{
         name = "The Treasure",
         text = {
             "Every hand played reduces",
-            "blind payout",
-            "Larger blind size"
+            "blind payout and requirement",
+            "larger blind size"
         }
     },
     calculate = function(self, blind, context)
@@ -437,7 +437,8 @@ SMODS.Blind{
                         else
                             G.GAME.current_round.dollars_to_be_earned = string.rep("$", blind.dollars)
                         end
-                        
+                        G.GAME.blind.chips = math.max(get_blind_amount(G.GAME.round_resets.ante) * 2, math.floor(G.GAME.blind.chips - (get_blind_amount(G.GAME.round_resets.ante) / 2)))
+                        G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
                     end
                     return true end
                 }))
@@ -448,5 +449,108 @@ SMODS.Blind{
         local blind = G.GAME.blind
         blind.dollars = 12
         G.GAME.current_round.dollars_to_be_earned = string.rep("$", blind.dollars)
+    end
+}
+
+SMODS.Blind{
+    key = "greed",
+    dollars = 8,
+    mult = 2,
+    atlas = "Blinds",
+    pos = { y = 13 },
+    config = { },
+    boss = { showdown = true },
+    boss_colour = HEX("ff7676"),
+    loc_txt = {
+        name = "Crimson Avarice",
+        text = {
+            "Lose 10$ every play,",
+            "increases requirement by 2X if it can't be paid"
+        }
+    },
+    calculate = function(self, blind, context)
+        if not blind.disabled then
+            if context.before then
+                if G.GAME.dollars - 10 < G.GAME.bankrupt_at then
+                    G.GAME.blind.chips = G.GAME.blind.chips * 2
+                    G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
+
+                    blind:wiggle()
+                    blind.triggered = true
+                else
+                    return { dollars = -10, instant = true,
+                        func = function()
+                            blind:wiggle()
+                        end
+                    }
+                end
+            end
+        end
+    end,
+}
+
+SMODS.Blind{
+    key = "patience",
+    dollars = 8,
+    mult = 3,
+    atlas = "Blinds",
+    pos = { y = 14 },
+    config = { },
+    boss = { showdown = true },
+    boss_colour = HEX("967aff"),
+    loc_txt = {
+        name = "Amethyst Hourglass",
+        text = {
+            "Increases requirement if hand overshoots"
+        }
+    },
+    calculate = function(self, blind, context)
+        if not blind.disabled then
+            if context.after then
+                G.E_MANAGER:add_event(Event({func = function()
+                    if SMODS.last_hand_oneshot then
+                        blind:wiggle()
+                        blind.triggered = true
+
+                        G.GAME.blind.chips = G.GAME.chips * 2
+                        G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
+                    end
+                    return true end
+                }))
+                
+            end
+        end
+    end,
+}
+
+SMODS.Blind{
+    key = "purist",
+    dollars = 10,
+    mult = 0.05,
+    atlas = "Blinds",
+    pos = { y = 15 },
+    config = { },
+    boss = { showdown = true },
+    boss_colour = HEX("17ff79"),
+    loc_txt = {
+        name = "Emerald Star",
+        text = {
+            "Jokers are disabled,",
+            "tiny blind size"
+        }
+    },
+    calculate = function(self, blind, context)
+        if not blind.disabled then
+            if context.setting_blind then
+                for n, x in ipairs(G.jokers.cards) do
+                    SMODS.debuff_card(x, true, "purism")
+                end
+            end
+        end
+    end,
+    disable = function(self)
+        for n, x in ipairs(G.jokers.cards) do
+            SMODS.debuff_card(x, false, "purism")
+        end
     end
 }

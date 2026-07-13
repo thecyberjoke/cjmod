@@ -5,7 +5,6 @@ end
 
 CJMod = {
     show_options_button = true,
-    
 }
 
 CJMod = SMODS.current_mod
@@ -18,6 +17,9 @@ CJMod.optional_features = function()
     }
 end
 
+print("Hi Balatro, i'm CJMod!")
+CJMod.long_stuff = SMODS.load_file("Lib/LongStuff.lua")()
+
 SMODS.Atlas{
     object_type = "Atlas",
     key = "main",
@@ -25,6 +27,23 @@ SMODS.Atlas{
     px = 71,
     py = 95,
 }
+
+SMODS.Atlas{
+    object_type = "Atlas",
+    key = "cba",
+    path = "CBA.png",
+    px = 71,
+    py = 95,
+}
+
+SMODS.Atlas{
+    object_type = "Atlas",
+    key = "limb",
+    path = "Limbus.png",
+    px = 71,
+    py = 95,
+}
+
 SMODS.Atlas{
     key = "Tarot",
     path = "Tarots.png",
@@ -113,7 +132,8 @@ local files = NFS.getDirectoryItems(mod_path .. "items")
 for _, file in ipairs(files) do
 	local f, err = SMODS.load_file("Items/" .. file)
 	if err then
-		error(err) 
+        print("Oopsie daisy, looks like CJMod had an error! Report this to 'cyberjoke' on Discord or make a GitHub Issue at 'https://github.com/thecyberjoke/cjmod/issues'!")
+		error(err)
 	end
     if f then
         f()

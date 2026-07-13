@@ -31,8 +31,8 @@ SMODS.Tag {
                         no_edition = true,
                     }
                     card:add_sticker("perishable", true)
-                    card.ability.perish_tally = 3
-                    card.ability.perishable_rounds = 3
+                    card.ability.perish_tally = 6
+                    card.ability.perishable_rounds = 6
                     if removelater then
                         G.GAME.banned_keys[tempkey] = false
                     end

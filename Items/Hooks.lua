@@ -1,14 +1,19 @@
 local gamehook = Game.update
 
+CJMod.time = 0
+
 function Game:update(dt)
+    CJMod.time = math.max(CJMod.time + dt, CJMod.time)
     local ret = gamehook(self, dt)
 
-    if G.GAME and G.GAME.blind and G.GAME.blind.config.blind.key == 'bl_CJMod_quick' and not G.GAME.blind.disabled and G.STATE ~= G.STATES.MENU and G.STATE ~= G.STATES.GAME_OVER and G.STATE ~= G.STATES.NEW_ROUND then
-        local subval = (G.GAME.blind.chips * 0.005) * (dt * 2)
-        if G.GAME.chips - subval > 0 then
-            subval = subval / 2
+    if G.GAME and G.GAME.blind then
+        if G.GAME.blind.config.blind.key == 'bl_CJMod_quick' and not G.GAME.blind.disabled and G.STATE ~= G.STATES.MENU and G.STATE ~= G.STATES.GAME_OVER and G.STATE ~= G.STATES.NEW_ROUND then
+            local subval = (G.GAME.blind.chips * 0.005) * (dt * 2)
+            if G.GAME.chips - subval > 0 then
+                subval = subval / 2
+            end
+            G.GAME.chips = G.GAME.chips - subval
         end
-        G.GAME.chips = G.GAME.chips - subval
     end
 
     local foundhand = nil
@@ -21,6 +26,24 @@ function Game:update(dt)
     end
 
     G.GAME.current_round.least_played_poker_hand = foundhand
+
+    for n, x in ipairs(CJMod.time_events.clock) do
+        if x.current + dt >= x.time then
+            x.func()
+            x.current = x.current - x.time + dt
+        else
+            x.current = x.current + dt
+        end
+    end
+
+    for n, x in ipairs(CJMod.time_events.timed) do
+        if x.current + dt >= x.time then
+            x.func()
+            table.remove(CJMod.time_events.timed, n)
+        else
+            x.current = x.current + dt
+        end
+    end
 
     return ret
 end
@@ -159,6 +182,55 @@ function get_new_boss()
     return boss
 end
 
+local ogshopcard = create_card_for_shop
+
+function create_card_for_shop(area)
+    if G.GAME.dante_stored and #G.GAME.dante_stored > 0 then
+        local proceed = false
+        for n, x in ipairs(G.jokers.cards) do
+            if x.config.center_key == "j_CJMod_dantesinner" and not x.debuff then
+                proceed = true
+                break
+            end
+        end
+
+        if proceed then
+            local jkr = G.GAME.dante_stored[#G.GAME.dante_stored]
+            if jkr then
+                table.remove(G.GAME.dante_stored, #G.GAME.dante_stored)
+                local args = {set = "Joker", key = jkr, area = area, key_append = 'sho'}
+                SMODS.calculate_context({create_shop_card = true, set = "Joker"})
+                local create_flags = SMODS.merge_defaults(flags and flags.shop_create_flags or {}, args)
+                local created = SMODS.create_card(create_flags)
+                SMODS.calculate_context({modify_shop_card = true, card = created})
+
+                create_shop_card_ui(created, "Joker", area)
+
+                G.E_MANAGER:add_event(Event({
+                    func = (function()
+                        for k, v in ipairs(G.GAME.tags) do
+                            if v:apply_to_run({type = 'store_joker_modify', card = created}) then break end
+                        end
+                        return true
+                    end)
+                }))
+
+                SMODS.calculate_context({ dante_destored = true, other_card = created })
+
+                print(created.config.center_key)
+
+                created:start_materialize()
+
+                return created
+            end
+        end
+    else
+        local ret = ogshopcard(area)
+
+        return ret
+    end
+end
+
 G.FUNCS.discard_cards_from_highlighted = function(e, hook)
     stop_use()
     G.CONTROLLER.interrupt.focus = true
@@ -210,6 +282,8 @@ G.FUNCS.discard_cards_from_highlighted = function(e, hook)
             end
         end
 
+        SMODS.calculate_context({ discarding = true, discarded = cards })
+
         -- context.remove_playing_cards from discard
         if destroyed_cards[1] then
             SMODS.calculate_context({remove_playing_cards = true, removed = destroyed_cards})
@@ -235,6 +309,28 @@ G.FUNCS.discard_cards_from_highlighted = function(e, hook)
             }))
         end
     end
+end
+
+local ogshuffle = CardArea.shuffle
+
+function CardArea:shuffle(_seed)
+	local result = ogshuffle(self, _seed)
+	if self == G.deck and G.GAME.used_vouchers["v_CJMod_cardjutsu"] then
+		local priority, normal = {}, {}
+		for n, x in ipairs(self.cards) do
+            if next(SMODS.get_enhancements(x)) or x.edition or x:get_seal(true) then
+				table.insert(priority, x)
+			else
+				table.insert(normal, x)
+			end
+		end
+        for _, card in ipairs(priority) do
+            table.insert(normal, card)
+        end
+		self.cards = normal
+		self:set_ranks()
+	end
+	return result
 end
 
 function end_round()
@@ -437,7 +533,7 @@ G.FUNCS.draw_from_play_to_discard = function(e)
     local it = 1
     for k, v in ipairs(G.play.cards) do
         if (not v.shattered) and (not v.destroyed) then
-            if G.GAME.used_vouchers["v_CJMod_cardjutsu"] then
+            if G.GAME.used_vouchers["v_CJMod_infinitus"] then
                 draw_card(G.play,G.deck, it*100/play_count,'down', false, v)
             else
                 draw_card(G.play,G.discard, it*100/play_count,'down', false, v)
@@ -447,11 +543,16 @@ G.FUNCS.draw_from_play_to_discard = function(e)
     end
 end
 
---[[
-
 local srun = G.start_run
 function G:start_run(args)
     srun(self,args)
+    if not G.GAME.special_flags then
+        G.GAME.special_flags = {
+            wrath_taken = false,
+            no_shuffle = false,
+        }
+    end
+    --[[
     G.trinkets =  CardArea(  
         G.consumeables.T.x + 1 * G.CARD_W, G.consumeables.T.y + G.consumeables.T.h + 0.03 * G.ROOM.T.h,
         1.25 * G.CARD_W, G.consumeables.T.h,
@@ -464,7 +565,10 @@ function G:start_run(args)
         }
     )
     SMODS.add_card({set="Trinket", area = G.trinkets})
+    ]]
 end
+
+--[[
 
 local uidef = G.UIDEF.card_focus_ui
 function G.UIDEF.card_focus_ui(card)

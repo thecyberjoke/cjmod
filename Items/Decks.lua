@@ -4,14 +4,19 @@ SMODS.Back {
     pos = { x = 0, y = 0 },
     unlocked = true,
     discovered = true,
+    config = { ante_scaling = 2 },
     loc_txt = {
         name = "Jack of Jacks",
         text = {
             "Start with {C:blue}Jacks{}",
             "instead of {C:red}Kings{}",
-            "and {C:money}Queens{}"
+            "and {C:money}Queens{}",
+            "{X:mult,C:white}X#1#{} Blind Scaling"
         },
     },
+    loc_vars = function(self, info_queue, card)
+        return { vars = {self.config.ante_scaling} }
+    end,
     apply = function(self, back)
         G.E_MANAGER:add_event(Event({
             func = function()
@@ -32,14 +37,13 @@ SMODS.Back {
     pos = { x = 1, y = 0 },
     unlocked = true,
     discovered = true,
-    config = { vouchers = { 'v_CJMod_cardjutsu', 'v_CJMod_infinitus' } },
+    config = { vouchers = { 'v_CJMod_infinitus' } },
     loc_txt = {
         name = "Discoloured Deck",
         text = {
             "Keep only {C:attention}2{} {C:spades}card suits{}",
             "for {C:red}each rank{}",
-            "Start with {C:green,E:1,T:v_CJMod_cardjutsu}Paper Jutsu{} and",
-            "{C:green,E:2,T:v_CJMod_infinitus}Cardis Infinitus{}"
+            "Start with {C:green,E:1,T:v_CJMod_infinitus}Sleigh of Hand{}",
         },
     },
     apply = function(self, back)
